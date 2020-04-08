@@ -1,0 +1,110 @@
+CREATE TABLE Company
+
+(
+  Company_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name VARCHAR(50) NOT NULL UNIQUE,
+  incorporation_form VARCHAR(20) NOT NULL
+)
+
+INSERT INTO Company
+
+  (name,incorporation_form)
+
+VALUES
+  ('Дар', 'ОАО'),
+  ('Мир','ООО'),
+  ('Иванов Иван Иванович','ИП')
+
+CREATE TABLE employees
+(
+  employees_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name VARCHAR NOT NULL UNIQUE
+);
+
+INSERT INTO employees
+  (name)
+VALUES
+  ('Надежда'),
+  ('Анатолий'),
+  ('Сергей')
+
+CREATE TABLE employer
+
+(
+  compsny_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name VARCHAR(50) NOT NULL UNIQUE
+)
+
+INSERT INTO employer
+  (name)
+VALUES
+  ('На Ленина'),
+  ('На Белинского'),
+  ('На Космонавтов')
+
+CREATE TABLE Contracts
+(
+  contr_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  number VARCHAR(10) NOT NULL UNIQUE,
+  contract_date Date NOT NULL,
+  manager INTEGER REFERENCES employees(employees_id),
+  company INTEGER REFERENCES Company(company_id)
+);
+
+INSERT INTO Contracts
+  (number, contract_date, manager, company)
+VALUES
+  ('АБ-1', '2015-05-05', 1, 1),
+  ('АБ-2', '2015-03-03', 1, 1),
+  ('АБ-3', '2017-05-05', 1, 1),
+  ('БВ-1', '2015-03-03', 1, 2),
+  ('БВ-2', '2016-03-03', 2, 2),
+  ('БВ-3', '2017-05-05', 2, 2),
+  ('ИИ-1', '2017-07-07', 2, 3)
+
+CREATE TABLE staff
+(
+  staff_id Integer PRIMARY KEY AUTOINCREMENT,
+  person INTEGER REFERENCES employees(employees_id),
+  office INTEGER REFERENCES Company(company_id),
+  start_working Date NOT NULL,
+  work_status BOOLEAN NOT NULL
+);
+
+INSERT INTO staff
+  (person, office, start_working, work_status)
+VALUES
+  (1, 1, '2015-01-01', 0),
+  (2, 1, '2016-01-01', 0),
+  (1, 2, '2017-01-01', 1),
+  (3, 2, '2017-01-01', 1),
+  (2, 3, '2017-01-01', 1)
+
+Запрос 1
+SELECT Contracts.contract_date, Contracts.number, employees.name AS manager, Company.name AS company
+
+FROM Contracts JOIN employees, Company
+
+ON Contracts.manager = employees.employees_id AND Contracts.company = Company.Company_id
+
+Запрос 2
+
+SELECT Contracts.contract_date, COUNT(contract_date) AS Contracts_count
+
+FROM Contracts
+
+GROUP BY contract_date
+
+HAVING Contracts_count > 1
+
+Запрос 3
+
+SELECT employees.name AS manager, COUNT(manager) AS Contracts_count
+
+FROM Contracts JOIN employees
+
+ON Contracts.manager = employees.employees_id
+
+GROUP BY manager
+
+ORDER BY 2 DESC; 
